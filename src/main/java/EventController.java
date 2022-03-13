@@ -29,17 +29,18 @@ public class EventController {
 //            System.out.println(e.type);
 //            System.out.println(e.segment.name);
 //            System.out.println(e.getY());
-//            scanLineY = e.getY();
+            scanLineY = e.getY();
             switch (e.type) {
                 case Start:
+
                     scanLineStatus.insert(e.segment);
                     BSTree<Segment>.BSTNode<Segment> node = scanLineStatus.search(e.segment);
                     BSTree<Segment>.BSTNode<Segment> pre = scanLineStatus.predecessor(node);
                     BSTree<Segment>.BSTNode<Segment> suc = scanLineStatus.successor(node);
-                    while(pre!=null&&e.segment.getX(scanLineY)<pre.getKey().getX(scanLineY))
-                        pre = scanLineStatus.predecessor(pre);
-                    while(suc!=null&&e.segment.getX(scanLineY)>suc.getKey().getX(scanLineY))
-                        suc = scanLineStatus.successor(suc);
+//                    while(pre!=null&&e.segment.getX(scanLineY)<pre.getKey().getX(scanLineY))
+//                        pre = scanLineStatus.predecessor(pre);
+//                    while(suc!=null&&e.segment.getX(scanLineY)>suc.getKey().getX(scanLineY))
+//                        suc = scanLineStatus.successor(suc);
                     if (pre != null) {
                         Segment neighbor = pre.getKey();
                         Point p = neighbor.getIntersect(e.segment);
@@ -66,21 +67,27 @@ public class EventController {
                     HashSet<Segment> segmentArrayList = new HashSet<>();
                     segmentArrayList.add(e.segment);
                     Event next = events.peek();
-                    while (next != null && e.type == next.type && e.p.x == next.p.x && e.p.y == next.p.y) {
-                        segmentArrayList.add(next.segment);
+                    while (next != null &&next.type==EventType.Intersect&& e.p.x == next.p.x && e.p.y == next.p.y) {
                         events.poll();
+                        segmentArrayList.add(next.segment);
                         next = events.peek();
                     }
-                    for (Segment s : segmentArrayList) {
-                        System.out.println(s.name);
-                    }
-                    for (Segment s : segmentArrayList) {
-                        scanLineStatus.remove(s);
-                        s.start.x = e.p.x;
-                        s.start.y = e.p.y;
-                        scanLineStatus.insert(s);
+                    Iterator<Segment>it = segmentArrayList.iterator();
+                    while (it.hasNext()) {
+                        Segment segment = it.next();
+                        System.out.println(segment.name);
+
+                        scanLineY -= 0.0001f;
+                        if (scanLineStatus.search(segment)!=null){
+                        scanLineStatus.remove(segment);
+                        scanLineY += 0.0001f;
+                        scanLineStatus.insert(segment);}
+                        else                         scanLineY += 0.0001f;
 
                     }
+
+
+
                     pre = scanLineStatus.search(e.segment);
                     BSTree<Segment>.BSTNode<Segment> prepre = scanLineStatus.predecessor(pre);
                     while(prepre!=null&&segmentArrayList.contains(prepre.getKey())){
@@ -114,6 +121,11 @@ public class EventController {
                             events.add(neighborInsect);
                             events.add(thisInsect);
                         }
+                    }
+                    while (next != null && e.p.x == next.p.x && e.p.y == next.p.y) {
+                        events.poll();
+                        scanLineStatus.remove(next.segment);
+                        next = events.peek();
                     }
                     break;
                 case End:

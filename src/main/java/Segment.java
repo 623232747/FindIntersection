@@ -50,7 +50,8 @@ public class Segment implements Comparable<Segment>{
     @Override
     public int compareTo(Segment o) {
         if(name.equals(o.name))return 0;
-        if(this.start.x!=o.start.x)return this.start.x>o.start.x?1:-1;
+        float y = EventController.getEventController().scanLineY;
+        if(this.getX(y)!=o.getX(y))return this.getX(y)>o.getX(y)?1:-1;
         else  return this.getSlope()>o.getSlope()?1:-1;
     }
     @Override
