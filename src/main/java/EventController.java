@@ -29,12 +29,14 @@ public class EventController {
 //            System.out.println(e.type);
 //            System.out.println(e.segment.name);
 //            System.out.println(e.getY());
+            if (e.getY()<scanLineY) continue;
             scanLineY = e.getY();
             switch (e.type) {
                 case Start:
-
+                    scanLineY -= 0.0001f;
                     scanLineStatus.insert(e.segment);
                     BSTree<Segment>.BSTNode<Segment> node = scanLineStatus.search(e.segment);
+                    scanLineY += 0.0001f;
                     BSTree<Segment>.BSTNode<Segment> pre = scanLineStatus.predecessor(node);
                     BSTree<Segment>.BSTNode<Segment> suc = scanLineStatus.successor(node);
 //                    while(pre!=null&&e.segment.getX(scanLineY)<pre.getKey().getX(scanLineY))
@@ -73,21 +75,19 @@ public class EventController {
                         next = events.peek();
                     }
                     Iterator<Segment>it = segmentArrayList.iterator();
+                    scanLineY -= 0.0001f;
                     while (it.hasNext()) {
                         Segment segment = it.next();
                         System.out.println(segment.name);
-
-                        scanLineY -= 0.0001f;
-                        if (scanLineStatus.search(segment)!=null){
                         scanLineStatus.remove(segment);
-                        scanLineY += 0.0001f;
-                        scanLineStatus.insert(segment);}
-                        else                         scanLineY += 0.0001f;
-
                     }
+                    it = segmentArrayList.iterator();
 
-
-
+                    scanLineY += 0.0001f;
+                    while (it.hasNext()) {
+                        Segment segment = it.next();
+                        scanLineStatus.insert(segment);
+                    }
                     pre = scanLineStatus.search(e.segment);
                     BSTree<Segment>.BSTNode<Segment> prepre = scanLineStatus.predecessor(pre);
                     while(prepre!=null&&segmentArrayList.contains(prepre.getKey())){

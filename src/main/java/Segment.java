@@ -41,9 +41,6 @@ public class Segment implements Comparable<Segment>{
     }
 
     float getX(float y){
-        if((y>end.y)||(y<start.y)){
-            return -1f;
-        }
         return (y-start.y)*(end.x-start.x)/(end.y-start.y)+start.x;
     }
 
